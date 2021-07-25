@@ -1,0 +1,7 @@
+{
+    "javascript.validate.enable": false,
+    "standard.autoFixOnSave": true,
+    "[javascript]": {
+        "editor.tabSize": 2
+    },
+}

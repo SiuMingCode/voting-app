@@ -1,0 +1,29 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13.3
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - POSTGRES_DB=${PGDATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+  voting-app:
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - PGUSER=${PGUSER}
+      - PGHOST=postgres
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - PGPORT=${PGPORT}
+    depends_on:
+      - postgres
+volumes:
+  pgdata:

@@ -1,14 +1,14 @@
 const { Router } = require('express')
 
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
-const { createCampaignValidator, voteValidator, campaignCursorValidator } = require('./validators')
+const { validateCreateCampaignPayload, validateVotePayload, validateCampaignCursor } = require('./validators')
 const { isHKID } = require('../utils')
 const { createCampaign, getCampaigns, getCampaign, deleteCampaign, voteCampaign } = require('./queries')
 const { PG_ERROR_CODE } = require('../db')
 
 const router = Router()
 
-router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), async function (req, res) {
+router.post('/', jsonBodyValidatingMiddlewareFactory(validateCreateCampaignPayload), async function (req, res) {
   if (!(new Date(req.body.start) < new Date(req.body.end))) {
     return res.status(400).json({
       errorCode: 'INVALID_PAYLOAD',
@@ -37,12 +37,12 @@ router.get('/', async function (req, res) {
       }
     }
 
-    const valid = campaignCursorValidator(cursor)
+    const valid = validateCampaignCursor(cursor)
     if (!valid) {
       return res.status(400).json({
         errorCode: 'INVALID_PAYLOAD',
         message: 'Could not understand the cursor given.',
-        details: campaignCursorValidator.errors
+        details: validateCampaignCursor.errors
       })
     }
   }
@@ -56,7 +56,7 @@ router.delete('/:campaignId', async function (req, res) {
   return res.sendStatus(204)
 })
 
-router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValidator), async function (req, res) {
+router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(validateVotePayload), async function (req, res) {
   if (!(isHKID(req.body.hkid))) {
     return res.status(400).json({
       errorCode: 'INVALID_HKID',

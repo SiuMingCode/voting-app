@@ -1,7 +1,7 @@
 const request = require('supertest')
 
 const app = require('../src/app')
-const { campaignValidator } = require('../src/campaigns/validators')
+const { validateCampaign } = require('../src/campaigns/validators')
 
 test('Hello World', async () => {
   const response = await request(app).get('/')
@@ -22,7 +22,7 @@ describe('Campaign', () => {
     }
     const response = await request(app).post('/campaigns').send(campaignToCreate)
     expect(response.statusCode).toBe(201)
-    campaignValidator(response.body)
-    expect(campaignValidator.errors).toBeNull()
+    validateCampaign(response.body)
+    expect(validateCampaign.errors).toBeNull()
   })
 })

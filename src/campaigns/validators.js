@@ -3,14 +3,14 @@ const { campaignSchema, createCampaignSchema, voteSchema, campaignCursorSchmea }
 
 const ajv = new Ajv()
 
-const campaignValidator = ajv.compile(campaignSchema)
-const createCampaignValidator = ajv.compile(createCampaignSchema)
-const voteValidator = ajv.compile(voteSchema)
-const campaignCursorValidator = ajv.compile(campaignCursorSchmea)
+const validateCampaign = ajv.compile(campaignSchema)
+const validateCreateCampaignPayload = ajv.compile(createCampaignSchema)
+const validateVotePayload = ajv.compile(voteSchema)
+const validateCampaignCursor = ajv.compile(campaignCursorSchmea)
 
 module.exports = {
-  campaignValidator,
-  createCampaignValidator,
-  voteValidator,
-  campaignCursorValidator
+  validateCampaign,
+  validateCreateCampaignPayload,
+  validateVotePayload,
+  validateCampaignCursor
 }

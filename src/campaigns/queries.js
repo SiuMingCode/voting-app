@@ -12,7 +12,7 @@ async function createCampaign (campaign) {
       end_time
     )
     VALUES ($1, $2, $3)
-    RETURNING campaign_id AS "campaignId"
+    RETURNING campaign_id::text AS "campaignId"
     `, [campaign.title, campaign.start, campaign.end])
 
     campaign.campaignId = res.rows[0].campaignId
@@ -64,7 +64,7 @@ async function getCampaignCandidates (campaignId) {
 async function getCampaign (campaignId) {
   const res = await pool.query(`
   SELECT
-    campaign_id AS "campaignId",
+    campaign_id::text AS "campaignId",
     title,
     start_time AS "start",
     end_time AS "end"
@@ -94,7 +94,7 @@ async function getCampaigns (cursor) {
   if (cursor) {
     res = await pool.query(`
     SELECT
-      campaign_id AS "campaignId",
+      campaign_id::text AS "campaignId",
       title,
       start_time AS "start",
       end_time AS "end"
@@ -107,7 +107,7 @@ async function getCampaigns (cursor) {
   } else {
     res = await pool.query(`
     SELECT
-      campaign_id AS "campaignId",
+      campaign_id::text AS "campaignId",
       title,
       start_time AS "start",
       end_time AS "end"

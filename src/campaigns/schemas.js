@@ -1,7 +1,7 @@
 const campaignSchema = {
   type: 'object',
   properties: {
-    id: {
+    campaignId: {
       type: 'string'
     },
     title: {
@@ -20,15 +20,11 @@ const campaignSchema = {
       items: {
         type: 'object',
         properties: {
-          id: {
-            type: 'string'
-          },
           title: {
             type: 'string'
           }
         },
         required: [
-          'id',
           'title'
         ],
         additionalProperties: false
@@ -37,7 +33,7 @@ const campaignSchema = {
     }
   },
   required: [
-    'id',
+    'campaignId',
     'title',
     'start',
     'end',

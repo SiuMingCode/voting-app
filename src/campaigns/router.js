@@ -3,7 +3,8 @@ const { Router } = require('express')
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
 const { createCampaignValidator, voteValidator } = require('./validators')
 const { isHKID } = require('../utils')
-const { createCampaign } = require('./queries')
+const { createCampaign, getCampaign, voteCampaign } = require('./queries')
+const { PG_ERROR_CODE } = require('../db')
 
 const router = Router()
 
@@ -19,7 +20,7 @@ router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), a
   return res.status(201).json(campaign)
 })
 
-router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValidator), function (req, res) {
+router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValidator), async function (req, res) {
   if (!(isHKID(req.body.hkid))) {
     return res.status(400).json({
       errorCode: 'INVALID_HKID',
@@ -27,7 +28,7 @@ router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValida
     })
   }
 
-  const campaign = {}
+  const campaign = await getCampaign(req.params.campaignId)
   const now = new Date()
   if (now < campaign.start) {
     return res.status(400).json({
@@ -42,9 +43,25 @@ router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValida
     })
   }
 
-  // TODO: ALREADY_VOTED
+  const ballot = {
+    campaignId: req.params.campaignId,
+    ...req.body
+  }
 
-  return res.status(201)
+  try {
+    await voteCampaign(ballot)
+  } catch (e) {
+    if (e.code === PG_ERROR_CODE.UNIQUE_VIOLATION) {
+      return res.status(400).json({
+        errorCode: 'ALREADY_VOTED',
+        message: 'You have already voted this campaign.'
+      })
+    } else {
+      throw e
+    }
+  }
+
+  return res.sendStatus(204)
 })
 
 module.exports = router

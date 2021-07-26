@@ -1,0 +1,153 @@
+openapi: 3.0.3
+info:
+  version: "1.0.0"
+  title: Voting app API
+paths:
+  /campaigns:
+    get:
+      summary: Get campaigns
+      parameters:
+        - in: query
+          name: cursor
+          description: >
+            A JSON like {
+              "end":"2021-07-21T00:00:00Z", 
+              "id": "1"
+            }
+          schema:
+            type: string
+            format: json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetCampaignPayload'
+    post:
+      summary: Create a voting campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCampaignPayload'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCampaignPayload'
+  /campaigns/{campaignId}:
+    delete:
+      summary: Delete a campaign
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: No Content
+  /campaigns/{campaignId}/votes:
+    post:
+      summary: Vote a campaign
+      parameters:
+        - in: path
+          name: campaignId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VotePayload'
+      responses:
+        '204':
+          description: No Content
+components:
+  schemas:
+    ErrorPayload:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+      required:
+        - errorCode
+        - message
+    VotePayload:
+      type: object
+      properties:
+        candidateTitle:
+          type: string
+        hkid:
+          type: string
+          pattern: '/^[A-Z]{1,2}[0-9]{6}\([A0-9]\)$/'
+      required:
+        - candidateTitle
+        - hkid
+    CreateCampaignCandidatePayload:
+      type: object
+      properties:
+        title:
+          type: string
+    GetCampaignCandidatePayload:
+      type: object
+      properties:
+        title:
+          type: string
+        votes:
+          type: integer
+    CreateCampaignPayload:
+      type: object
+      properties:
+        title:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateCampaignCandidatePayload'
+          minLength: 1
+      required:
+        - title
+        - start
+        - end
+        - candidates
+    GetCampaignPayload:
+      type: object
+      properties:
+        campaignId:
+          type: string
+        title:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetCampaignCandidatePayload'
+          minLength: 1
+      required:
+        - campaignId
+        - title
+        - start
+        - end
+        - candidates

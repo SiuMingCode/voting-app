@@ -3,7 +3,7 @@ const { Router } = require('express')
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
 const { createCampaignValidator, voteValidator } = require('./validators')
 const { isHKID } = require('../utils')
-const { createCampaign, getCampaign, voteCampaign } = require('./queries')
+const { createCampaign, getCampaign, deleteCampaign, voteCampaign } = require('./queries')
 const { PG_ERROR_CODE } = require('../db')
 
 const router = Router()
@@ -18,6 +18,11 @@ router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), a
 
   const campaign = await createCampaign(req.body)
   return res.status(201).json(campaign)
+})
+
+router.delete('/:campaignId', async function (req, res) {
+  await deleteCampaign(req.params.campaignId)
+  return res.sendStatus(204)
 })
 
 router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValidator), async function (req, res) {

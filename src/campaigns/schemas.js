@@ -86,7 +86,28 @@ const createCampaignSchema = {
   additionalProperties: false
 }
 
+const hkidSchema = {
+  type: 'string',
+  pattern: '^[A-Z]{1,2}[0-9]{6}\\([0-9A]\\)$'
+}
+
+const voteSchema = {
+  type: 'object',
+  properties: {
+    candidateTitle: {
+      type: 'string'
+    },
+    hkid: hkidSchema
+  },
+  required: [
+    'candidateTitle',
+    'hkid'
+  ],
+  additionalProperties: false
+}
+
 module.exports = {
   campaignSchema,
-  createCampaignSchema
+  createCampaignSchema,
+  voteSchema
 }

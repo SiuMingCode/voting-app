@@ -1,6 +1,8 @@
 const { Router } = require('express')
+
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
-const { createCampaignValidator } = require('./validators')
+const { createCampaignValidator, voteValidator } = require('./validators')
+const { isHKID } = require('../utils')
 
 const router = Router()
 
@@ -18,6 +20,34 @@ router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), f
     candidate.id = '1'
   }
   return res.status(201).json(campaign)
+})
+
+router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(voteValidator), function (req, res) {
+  if (!(isHKID(req.body.hkid))) {
+    return res.status(400).json({
+      errorCode: 'INVALID_HKID',
+      message: 'Please double check your HKID number input.'
+    })
+  }
+
+  const campaign = {}
+  const now = new Date()
+  if (now < campaign.start) {
+    return res.status(400).json({
+      errorCode: 'NOT_YET_STARTED',
+      message: `Campaign will begin at ${campaign.start.toString()}.`
+    })
+  }
+  if (campaign.end < now) {
+    return res.status(400).json({
+      errorCode: 'ALREADY_ENDED',
+      message: 'Campaign has already ended.'
+    })
+  }
+
+  // TODO: ALREADY_VOTED
+
+  return res.status(201)
 })
 
 module.exports = router

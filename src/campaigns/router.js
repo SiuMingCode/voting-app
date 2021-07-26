@@ -65,6 +65,13 @@ router.post('/:campaignId/votes', jsonBodyValidatingMiddlewareFactory(validateVo
   }
 
   const campaign = await getCampaign(req.params.campaignId)
+  if (!campaign) {
+    return res.status(404).json({
+      errorCode: 'NOT_FOUND',
+      message: `Campaign ${req.params.campaignId} does not exist.`
+    })
+  }
+
   const now = new Date()
   if (now < campaign.start) {
     return res.status(400).json({

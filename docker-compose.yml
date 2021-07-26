@@ -33,5 +33,13 @@ services:
       - 8000:80
     depends_on:
       - voting-app
+  api-doc:
+    image: swaggerapi/swagger-ui
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+    ports:
+      - 8080:8080
+    environment:
+      - SWAGGER_JSON=/openapi.yaml
 volumes:
   pgdata:

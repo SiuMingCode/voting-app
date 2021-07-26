@@ -14,7 +14,7 @@ services:
     build:
       context: .
     ports:
-      - 3000:3000
+      - 3000
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -25,5 +25,13 @@ services:
       - PGPORT=${PGPORT}
     depends_on:
       - postgres
+  reverse-proxy:
+    image: nginx:1.21
+    volumes:
+      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8000:80
+    depends_on:
+      - voting-app
 volumes:
   pgdata:

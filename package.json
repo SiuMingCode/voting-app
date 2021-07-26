@@ -8,7 +8,7 @@
     ]
   },
   "scripts": {
-    "start": "nodemon -w src",
+    "start": "nodemon -w src -r dotenv/config",
     "test": "jest"
   },
   "dependencies": {

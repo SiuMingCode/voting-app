@@ -1,10 +1,10 @@
 const { Router } = require('express')
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
-const { createCampaignSchemaValidator } = require('./validators')
+const { createCampaignValidator } = require('./validators')
 
 const router = Router()
 
-router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignSchemaValidator), function (req, res) {
+router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), function (req, res) {
   if (!(new Date(req.body.start) < new Date(req.body.end))) {
     return res.status(400).json({
       errorCode: 'INVALID_PLAYLOAD',

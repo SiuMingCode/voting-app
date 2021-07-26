@@ -11,7 +11,7 @@ const router = Router()
 router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), async function (req, res) {
   if (!(new Date(req.body.start) < new Date(req.body.end))) {
     return res.status(400).json({
-      errorCode: 'INVALID_PLAYLOAD',
+      errorCode: 'INVALID_PAYLOAD',
       message: 'Start time should be earlier than end time.'
     })
   }
@@ -29,7 +29,7 @@ router.get('/', async function (req, res) {
     } catch (e) {
       if (e instanceof SyntaxError) {
         return res.status(400).json({
-          errorCode: 'INVALID_PLAYLOAD',
+          errorCode: 'INVALID_PAYLOAD',
           message: 'Cursor has to be in JSON.'
         })
       } else {
@@ -40,7 +40,7 @@ router.get('/', async function (req, res) {
     const valid = campaignCursorValidator(cursor)
     if (!valid) {
       return res.status(400).json({
-        errorCode: 'INVALID_PLAYLOAD',
+        errorCode: 'INVALID_PAYLOAD',
         message: 'Could not understand the cursor given.',
         details: campaignCursorValidator.errors
       })

@@ -26,7 +26,7 @@ function isHKID (str) {
   }
   const remaining = checkSum % 11
   const verify = (remaining === 0 ? 0 : 11 - remaining).toString()
-  return verify === checkDigit || (verify === 10 && checkDigit === 'A')
+  return verify === checkDigit || (verify === '10' && checkDigit === 'A')
 }
 
 module.exports = {

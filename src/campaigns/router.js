@@ -3,10 +3,11 @@ const { Router } = require('express')
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
 const { createCampaignValidator, voteValidator } = require('./validators')
 const { isHKID } = require('../utils')
+const { createCampaign } = require('./queries')
 
 const router = Router()
 
-router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), function (req, res) {
+router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), async function (req, res) {
   if (!(new Date(req.body.start) < new Date(req.body.end))) {
     return res.status(400).json({
       errorCode: 'INVALID_PLAYLOAD',
@@ -14,11 +15,7 @@ router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), f
     })
   }
 
-  const campaign = req.body
-  campaign.id = '1'
-  for (const candidate of campaign.candidates) {
-    candidate.id = '1'
-  }
+  const campaign = await createCampaign(req.body)
   return res.status(201).json(campaign)
 })
 

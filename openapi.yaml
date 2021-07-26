@@ -6,13 +6,15 @@ paths:
   /campaigns:
     get:
       summary: Get campaigns
+      description: The list is sorted by end time desc, id desc. Cursor-paginated. Fetch 10 campaigns at a time.
       parameters:
         - in: query
           name: cursor
           description: >
+            To do cursor-based pagination.
             A JSON like {
               "end":"2021-07-21T00:00:00Z", 
-              "id": "1"
+              "campaignId": "1"
             }
           schema:
             type: string

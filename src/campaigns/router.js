@@ -1,9 +1,9 @@
 const { Router } = require('express')
 
 const { jsonBodyValidatingMiddlewareFactory } = require('../middlewares')
-const { createCampaignValidator, voteValidator } = require('./validators')
+const { createCampaignValidator, voteValidator, campaignCursorValidator } = require('./validators')
 const { isHKID } = require('../utils')
-const { createCampaign, getCampaign, deleteCampaign, voteCampaign } = require('./queries')
+const { createCampaign, getCampaigns, getCampaign, deleteCampaign, voteCampaign } = require('./queries')
 const { PG_ERROR_CODE } = require('../db')
 
 const router = Router()
@@ -18,6 +18,37 @@ router.post('/', jsonBodyValidatingMiddlewareFactory(createCampaignValidator), a
 
   const campaign = await createCampaign(req.body)
   return res.status(201).json(campaign)
+})
+
+router.get('/', async function (req, res) {
+  let cursor
+
+  if (req.query.cursor) {
+    try {
+      cursor = JSON.parse(req.query.cursor)
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        return res.status(400).json({
+          errorCode: 'INVALID_PLAYLOAD',
+          message: 'Cursor has to be in JSON.'
+        })
+      } else {
+        throw e
+      }
+    }
+
+    const valid = campaignCursorValidator(cursor)
+    if (!valid) {
+      return res.status(400).json({
+        errorCode: 'INVALID_PLAYLOAD',
+        message: 'Could not understand the cursor given.',
+        details: campaignCursorValidator.errors
+      })
+    }
+  }
+
+  const campaigns = await getCampaigns(cursor)
+  return res.status(200).json(campaigns)
 })
 
 router.delete('/:campaignId', async function (req, res) {

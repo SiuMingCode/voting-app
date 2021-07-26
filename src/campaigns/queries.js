@@ -90,18 +90,32 @@ async function getCampaign (campaignId) {
 }
 
 async function getCampaigns (cursor) {
-  const res = await pool.query(`
-  SELECT
-    campaign_id AS "campaignId",
-    title,
-    start_time AS "start",
-    end_time AS "end"
-  FROM campaign
-  WHERE end_time <= $1
-    AND campaign_id < $2
-  ORDER BY end_time DESC, campaign_id DESC
-  LIMIT 10
-  `, [cursor.end, cursor.campaignId])
+  let res
+  if (cursor) {
+    res = await pool.query(`
+    SELECT
+      campaign_id AS "campaignId",
+      title,
+      start_time AS "start",
+      end_time AS "end"
+    FROM campaign
+    WHERE end_time <= $1
+      AND campaign_id < $2
+    ORDER BY end_time DESC, campaign_id DESC
+    LIMIT 10
+    `, [cursor.end, cursor.campaignId])
+  } else {
+    res = await pool.query(`
+    SELECT
+      campaign_id AS "campaignId",
+      title,
+      start_time AS "start",
+      end_time AS "end"
+    FROM campaign
+    ORDER BY end_time DESC, campaign_id DESC
+    LIMIT 10
+    `)
+  }
 
   const campaigns = res.rows
   for (const campaign of campaigns) {

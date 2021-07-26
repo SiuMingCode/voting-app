@@ -106,8 +106,26 @@ const voteSchema = {
   additionalProperties: false
 }
 
+const campaignCursorSchmea = {
+  type: 'object',
+  properties: {
+    end: {
+      type: 'string'
+    },
+    campaignId: {
+      type: 'string'
+    }
+  },
+  required: [
+    'end',
+    'campaignId'
+  ],
+  additionalProperties: false
+}
+
 module.exports = {
   campaignSchema,
   createCampaignSchema,
-  voteSchema
+  voteSchema,
+  campaignCursorSchmea
 }

@@ -6,7 +6,7 @@ services:
       - 5432:5432
     environment:
       - POSTGRES_PASSWORD=${PGPASSWORD}
-      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_DB=voting_app
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
@@ -18,11 +18,11 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - PGUSER=${PGUSER}
+      - PGUSER=postgres
       - PGHOST=postgres
       - PGPASSWORD=${PGPASSWORD}
-      - PGDATABASE=${PGDATABASE}
-      - PGPORT=${PGPORT}
+      - PGDATABASE=voting_app
+      - PGPORT=5432
     depends_on:
       - postgres
   reverse-proxy:
